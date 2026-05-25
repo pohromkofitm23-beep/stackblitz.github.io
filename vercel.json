@@ -1,12 +1,15 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/proxy",
-      "destination": "/api/proxy.js"
-    },
-    {
-      "source": "/api/proxy/",
-      "destination": "/api/proxy.js"
+import { defineConfig } from 'vite'
+import react from '@vitejs/react-refresh' 
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://mod.kubg.edu.ua',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/cgi-bin/timetable.cgi')
+      }
     }
-  ]
-}
+  }
+})
