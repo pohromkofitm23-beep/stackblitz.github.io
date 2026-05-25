@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/proxy",
-      "destination": "http://mod.kubg.edu.ua/cgi-bin/timetable.cgi?group=:group&sdate=:sdate&edate=:edate"
+      "destination": "http://mod.kubg.edu.ua/cgi-bin/timetable.cgi"
     },
     {
       "source": "/(.*)",
