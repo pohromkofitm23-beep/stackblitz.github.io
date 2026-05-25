@@ -1,11 +1,15 @@
 {
   "rewrites": [
     {
-      "source": "/api/proxy",
-      "destination": "http://mod.kubg.edu.ua/cgi-bin/timetable.cgi"
+      "source": "/schedule(.*)",
+      "destination": "http://mod.kubg.edu.ua/cgi-bin/timetable.cgi$1"
     },
     {
-      "source": "/api/proxy/",
+      "source": "/api/proxy(.*)",
+      "destination": "http://mod.kubg.edu.ua/cgi-bin/timetable.cgi$1"
+    },
+    {
+      "source": "/api/(.*)",
       "destination": "http://mod.kubg.edu.ua/cgi-bin/timetable.cgi"
     }
   ]
