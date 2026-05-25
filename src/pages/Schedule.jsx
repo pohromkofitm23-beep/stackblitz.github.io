@@ -122,16 +122,18 @@ export default function Schedule() {
       setIsLoading(true);
       const { sdate, edate } = getWeekRange(value);
       const targetId = groupIds[activeGroup] || '810';
-      
-      // ВИПРАВЛЕНО ШЛЯХ ЗАПИТУ, ЩОБ ВІН УЗГОДЖУВАВСЯ З VERCEL.JSON
       const localProxyUrl = `/api/proxy?group=${targetId}&sdate=${sdate}&edate=${edate}`;
 
       try {
         const response = await fetch(localProxyUrl);
-        if (!response.ok) throw new Error('Помилка сервера');
+        if (!response.ok) throw new Error('Помилка сервера при запиті');
 
         const htmlText = await response.text();
-        if (!htmlText || htmlText.length < 500) throw new Error('Мало даних');
+        
+        // Якщо сервер віддав заглушку захисту або замало даних — відразу йдемо в бекап
+        if (!htmlText || htmlText.length < 1000 || htmlText.includes('challenge') || htmlText.includes('protection')) {
+          throw new Error('Отримано невалідний HTML або спрацював захист КУБГ');
+        }
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
@@ -192,7 +194,7 @@ export default function Schedule() {
                         date: formattedDate,
                         time: getPairTime(pairNumber),
                         title: cleanTitle,
-                        type: isRemote ? 'Дистанційно' : 'В університеті',
+                        type: isRemote ? 'Дистанційно' : 'В運行виреситеті',
                         room: roomInfo,
                       });
                     }
@@ -203,10 +205,11 @@ export default function Schedule() {
           }
         });
 
-        if (parsedEvents.length === 0) throw new Error('Порожній тиждень');
+        if (parsedEvents.length === 0) throw new Error('Порожній розклад у DOM');
         setRealEvents(parsedEvents);
       } catch (err) {
-        console.log("Завантажено локальний бекап через: ", err.message);
+        console.warn("Робота через стабільний локальний режим: ", err.message);
+        // Завантажуємо локальні дані, якщо онлайн-парсинг не вдався
         setRealEvents(localBackupSchedule[activeGroup] || []);
       } finally {
         setIsLoading(false);
