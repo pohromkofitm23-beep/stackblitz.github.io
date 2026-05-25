@@ -5,10 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': {
+      '/api/proxy': {
         target: 'http://mod.kubg.edu.ua',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/cgi-bin/timetable.cgi')
+        rewrite: (path) => path.replace(/^\/api\/proxy/, '/cgi-bin/timetable.cgi')
       }
     }
   }
