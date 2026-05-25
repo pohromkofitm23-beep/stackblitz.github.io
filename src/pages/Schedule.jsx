@@ -126,13 +126,12 @@ export default function Schedule() {
 
       try {
         const response = await fetch(localProxyUrl);
-        if (!response.ok) throw new Error('Помилка сервера при запиті');
+        if (!response.ok) throw new Error('Server error');
 
         const htmlText = await response.text();
         
-        // Якщо сервер віддав заглушку захисту або замало даних — відразу йдемо в бекап
         if (!htmlText || htmlText.length < 1000 || htmlText.includes('challenge') || htmlText.includes('protection')) {
-          throw new Error('Отримано невалідний HTML або спрацював захист КУБГ');
+          throw new Error('Invalid HTML or DDoS protection');
         }
 
         const parser = new DOMParser();
@@ -194,7 +193,7 @@ export default function Schedule() {
                         date: formattedDate,
                         time: getPairTime(pairNumber),
                         title: cleanTitle,
-                        type: isRemote ? 'Дистанційно' : 'В運行виреситеті',
+                        type: isRemote ? 'Дистанційно' : 'В університеті',
                         room: roomInfo,
                       });
                     }
@@ -205,11 +204,10 @@ export default function Schedule() {
           }
         });
 
-        if (parsedEvents.length === 0) throw new Error('Порожній розклад у DOM');
+        if (parsedEvents.length === 0) throw new Error('Empty events');
         setRealEvents(parsedEvents);
       } catch (err) {
-        console.warn("Робота через стабільний локальний режим: ", err.message);
-        // Завантажуємо локальні дані, якщо онлайн-парсинг не вдався
+        console.warn("Local data loaded: ", err.message);
         setRealEvents(localBackupSchedule[activeGroup] || []);
       } finally {
         setIsLoading(false);
